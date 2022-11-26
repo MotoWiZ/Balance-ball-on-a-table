@@ -9,6 +9,7 @@ cv2.namedWindow("Masked image", cv2.WINDOW_NORMAL)
 cX, cY = 0, 0
 lower_white = (0, 0, 0)
 upper_white = (0, 0, 255)
+t = time.time()
 
 # Configuration of Raspberry Pi camera (Legacy disabled in raspi-config)
 def camera_config():
@@ -78,7 +79,9 @@ if __name__ == "__main__":
             break
     
         # Print Frames per Second
-        print("FPS: ", 1.0 / (time.time() - start_time))
+        if time.time() - t>1:
+            print("FPS: ", "%.2f" % (1.0 / (time.time() - start_time)))
+            t = time.time()
         
     # Exit closing cv2 windows
     cv2.destroyAllWindows()
