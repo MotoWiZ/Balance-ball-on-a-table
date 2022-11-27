@@ -85,6 +85,118 @@ def windows(original, img, result):
     cv2.imshow("Masked image",result)
     cv2.resizeWindow("Masked image", 400, 300) 
     cv2.moveWindow("Masked image", 870,100) 
+    
+    
+#----------------------------------------#
+#------------PID CONTROL-----------------#
+# Nota inicial: Eles aqui utilizam os ângulos alpha e beta. A meu ver, devíamos utilizar estes ângulos de maneira a 
+# que alpha controla, por exemplo, o movimento da bola no eixo X e beta controla a bola no eixo Y.
+# Os seguintes valores têm que ser inseridos: coordenadas do centro da bandeja, Kp, Ki, Kd, 
+sumErrorX = 1
+sumErrorY = 1
+#timeInterval = 1 <- Creio que não seja necessário
+alpha, beta, prevAlpha, prevBeta = 0,0,0,0
+omega = 0.2
+centerX, centerY = 240,240 # <- CENTRO DA BANDEJA, não sei os valores. Não precisa de ser declarado aqui, deve 
+#ser determinado noutro sítio qualquer e deve ser colocado nas variáveis globais centerX e centerY 
+
+def PIDcontrol(ballPosX, ballPosY, prevBallPosX, prevBallPosY, centerX, centerY):
+    global omega
+    global sumErrorX, sumErrorY
+    global alpha, beta, prevAlpha, prevBeta
+    
+	#Definição dos parâmetros:
+    Kp = 1 #valor de Kp
+    Ki = 1 #valor de Ki
+    Kd = 1 #valor de Kd
+	
+	#Cálculo dos erros em X e Y:
+    Ix = Kp*(centerX-ballPosX) + Ki*sumErrorX + Kd*((prevBallPosX-ballPosX)/0.0333) # <- não entendo o 0.0333...
+    Iy = Kp*(centerY-ballPosY) + Ki*sumErrorY + Kd*((prevBallPosY-ballPosY)/0.0333)
+    
+	#Arredondar erros para 4 casas decimais
+    Ix = round(Ix/10000, 4)
+    Iy = round(Iy/10000, 4)
+    
+	#Se bola está no centro da bandeja, mete bandeja na horizontal:
+    if Ix == 0 and Iy == 0:
+        alpha = 0
+        beta = 0
+    
+	# Os próximos 4 "elif"s são diferentes casos de erros nas posições da bola (Ix, Iy) e os respetivos ângulos para os servos. 
+	# Neste exemplo existiam 3 servos em triângulo. Como no nosso só temos 2, as contas serão diferentes. 
+	# Temos que averiguar os casos para o nosso sistema, para diferentes erros Ix e Iy.
+    elif Ix != 0 and sqrt(Ix**2 + Iy**2) < 1:
+        beta = atan(Iy/Ix)
+        alpha = asin(sqrt(Ix**2 + Iy**2))
+        beta = degrees(beta)
+        alpha = degrees(alpha)
+        if Ix < 0 and Iy >= 0:
+            beta = abs(beta)
+        elif Ix > 0 and Iy >= 0:
+            beta = 180-abs(beta)
+        elif Ix > 0 and Iy <= 0:
+            beta = 180+abs(beta)
+        elif Ix < 0 and Iy <= 0:
+            beta = 360-abs(beta)
+
+    elif Ix == 0 and sqrt(Ix**2 + Iy**2) < 1:
+        if Iy > 0:
+            beta = 90
+            alpha = asin(sqrt(Ix**2 + Iy**2))
+        elif Iy < 0:
+            beta = 270
+            alpha = asin(sqrt(Ix**2 + Iy**2))
+        alpha = degrees(alpha)
+
+    elif Ix != 0 and sqrt(Ix**2 + Iy**2) > 1:
+        beta = degrees(atan(Iy/Ix))
+        alpha = 35
+        if Ix < 0 and Iy >= 0:
+            beta = abs(beta)
+        elif Ix > 0 and Iy >= 0:
+            beta = 180-abs(beta)
+        elif Ix > 0 and Iy <= 0:
+            beta = 180+abs(beta)
+        elif Ix < 0 and Iy <= 0:
+            beta = 360-abs(beta)
+
+    elif Ix == 0 and sqrt(Ix**2 + Iy**2) > 1:
+        alpha = 35
+        if Iy > 0:
+            beta = 90
+        elif Iy < 0:
+            beta = 270
+	
+	#Alguma limitação de alpha:
+    if alpha > 35:
+        alpha = 35
+	
+	#Adicionar alguma influência dos ângulos anteriores segundo o parâmetro omega. 
+	#Neste caso, o novo alpha e cálculado como 20% de prevAlpha e 80% de alpha. 
+	#O mesmo é realizado para beta.
+    alpha = prevAlpha * omega + (1-omega) * alpha
+    beta = prevBeta * omega + (1-omega) * beta
+	
+	#Permite arredondamento com precisão de 0.2 (honestamente não percebo o motivo disto)
+    alpha = round(round(alpha / 0.2) * 0.2, -int(floor(log10(0.2))))
+    beta = round(round(beta / 0.2) * 0.2, -int(floor(log10(0.2))))
+
+	#Com alpha e beta determinados, é preciso enviar os ângulos para os servos.
+	#O if serve para limitar os ângulos aos limites físicos dos servos, talvez possam ser alterados 
+    #consoante os modelos no nosso hardware.
+    if alpha <= 35 and beta <= 360:
+        # !!!!!!!! inserir código para enviar os ângulos para os servos !!!!!!!!! #
+	
+	#Prints...
+    #print(alpha, beta)
+    print(Ix,Iy,alpha,beta,ballPosX,ballPosY,prevBallPosX,prevBallPosY,sumErrorX,sumErrorY)
+
+	#Cálculo de erros, que são utilizados no PID:
+    sumErrorX += (centerX-ballPosX)
+    sumErrorY += (centerY-ballPosY)
+#----------END OF PID CONTROL------------#
+#----------------------------------------#
 
 # -> Main
 if __name__ == "__main__":
