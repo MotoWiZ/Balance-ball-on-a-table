@@ -8,6 +8,7 @@ Created on Sat Nov 26 2022
 #%%
 import cv2
 import time
+import numpy as np
 from picamera2 import Picamera2 
 
 lower_white = (0, 0, 0)
@@ -37,25 +38,35 @@ def get_image(picam2):
 
 # -> Find white ball on table
 def find_ball(img, x_cent, y_cent):
+    ball_exists = False
     cX, cY = 0, 0
     hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
     # Mask image for whites
     mask = cv2.inRange(hsv, lower_white, upper_white)
     # Get bitwise image with mask    
     result = cv2.bitwise_and(img, img, mask = mask)
-    # Find center of white ball   
-    M = cv2.moments(mask)
-    if M["m00"] != 0:
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
-    # Place red circle and text in center of white ball
-    cv2.circle(result, (cX, cY), 10, (0, 0, 255), -1)
-    cv2.putText(result, "Object center", (cX - 110, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+    # Transform img in Black & White
+    gray = cv2.cvtColor(result,cv2.COLOR_RGB2GRAY)
+    (thresh, bw) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    # Detect if exeists white object
+    if np.sum(bw) > 1000:
+        # Find center of white ball   
+        M = cv2.moments(mask)
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+        # Place red circle and text in center of white ball
+        cv2.circle(result, (cX, cY), 10, (0, 0, 255), -1)
+        cv2.putText(result, "Object center", (cX - 110, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        ball_exists = True
+    else:
+        cv2.putText(result, "No ball detected", (x_cent - 130, 100),cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(img, "No ball detected", (x_cent - 130, 100),cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     # Place green circle in center of result
     cv2.circle(result, (x_cent, y_cent), 10, (0, 255, 0), -1)
     # Place green circle in center of reduced image
     cv2.circle(img, (x_cent, y_cent), 10, (0, 255, 0), -1)
-    return img, result
+    return img, result, ball_exists
 
 # -> Windows for original, reduced and mask images
 def windows(original, img, result):
@@ -125,7 +136,7 @@ if __name__ == "__main__":
                 img = img[y_pos[1]:y_pos[0], x_pos[1]:x_pos[0]]
                 x_cent = int((x_pos[0] - x_pos[1])/2)
         #print(x_cent, y_cent)
-        img, result = find_ball(img, x_cent, y_cent)
+        img, result, ball_exists = find_ball(img, x_cent, y_cent)
         # Place green circle in center of original image
         cv2.circle(original, (400, 300), 10, (0, 255, 0), -1)
         windows(original, img, result)        
