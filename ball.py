@@ -198,10 +198,10 @@ def PIDcontrol(ballPosX, ballPosY, lastprevBallPosX, lastprevBallPosY, prevBallP
     prevBeta = beta
     alpha = Ix #0 # 
     beta = Iy #0 # 
-    print("PID max & min values: ", maxIx, minIx, maxIy, minIy)
-    print("PID values: ", Ix, Iy, math.sqrt(Ix**2 + Iy**2))
-    print("Center & BallPos:", centerX, centerY, ballPosX, ballPosY, prevBallPosX, prevBallPosY)  
-    print("Error X & Y: ", sumErrorX, sumErrorY)
+    #print("PID max & min values: ", maxIx, minIx, maxIy, minIy)
+    #print("PID values: ", Ix, Iy, math.sqrt(Ix**2 + Iy**2))
+    #print("Center & BallPos:", centerX, centerY, ballPosX, ballPosY, prevBallPosX, prevBallPosY)  
+    #print("Error X & Y: ", sumErrorX, sumErrorY)
     #print("Center & BallPos:", centerX, centerY, ballPosX, ballPosY)
     #print("BallPos:", abs(centerX - ballPosX), abs(centerY - ballPosY)) 
     return alpha, beta
@@ -228,7 +228,7 @@ def servos(alpha, beta):
     elif pwm2 > 1580:
         pwm2 = 1580
     #print("PID & PWM: ", alpha, beta, pwm1, pwm2)
-    print("PWM: ", pwm1, pwm2)
+    #print("PWM: ", pwm1, pwm2)
     return pwm1, pwm2
 #------------END OF SERVOS---------------#
 #----------------------------------------#
