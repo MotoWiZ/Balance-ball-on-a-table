@@ -156,8 +156,8 @@ def PIDcontrol(ballPosX, ballPosY, lastprevBallPosX, lastprevBallPosY, prevBallP
     # Parameters definition:
     Kp = 0.65 #valor de Kp 0.65
     Ki = 0.015 #valor de Ki 0.015
-    Kd = 0.5 #valor de Kd 0.5
-    Ka = 0.3 #valor de Ka 0.3
+    Kd = 20 #valor de Kd 20
+    Ka = 50 #valor de Ka 50
     
     # Calculate accelaration
     accX = (prevBallPosX - ballPosX) - (lastprevBallPosX - prevBallPosX) 
@@ -167,11 +167,15 @@ def PIDcontrol(ballPosX, ballPosY, lastprevBallPosX, lastprevBallPosY, prevBallP
     sumErrorY += centerY - ballPosY
 	# Error calculation in X and Y (PID):
     if abs(centerX-ballPosX) < abs(centerX-prevBallPosX) and abs(centerX-prevBallPosX) < abs(centerX-lastprevBallPosX):
+        # Sleep a little before returning that X axis to horizontal
+        time.sleep(0.002)
         Ix = 0
         sumErrorX = 0
     else:
         Ix = Kp*(centerX-ballPosX) + Ki*(sumErrorX) + Ka*accX + Kd*(prevBallPosX-ballPosX)
     if abs(centerY-ballPosY) < abs(centerY-prevBallPosY) and abs(centerY-prevBallPosY) < abs(centerY-lastprevBallPosY):
+        # Sleep a little before returning that Y axis to horizontal
+        time.sleep(0.002)
         Iy = 0
         sumErrorY = 0
     else:
