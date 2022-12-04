@@ -9,7 +9,6 @@ Created on Sat Nov 26 2022
 import cv2
 import time
 import numpy as np
-import math
 from picamera2 import Picamera2
 import os
 # -> Start pigpio library from prompt. This instruction is needed for the pigpio library to be self-set.
@@ -193,7 +192,7 @@ def PIDcontrol(ballPosX, ballPosY, lastprevBallPosX, lastprevBallPosY, prevBallP
     elif Iy < minIy:
         minIy = Iy
     
-    # Store preveous PID Values if needed in future   
+    # Store previous PID Values if needed in future   
     prevAlpha = alpha
     prevBeta = beta
     alpha = Ix #0 # 
