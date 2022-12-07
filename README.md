@@ -20,5 +20,5 @@ Software:
   - Raspbian ver. 11 (bullseye)
   - 32 bit version
   - kernel ver: 5.15
-- Rtems on top of Raspbian followed this toturial with modifications https://mritunjaysharma394.medium.com/installing-rtems-ecosystem-and-building-your-first-bsp-993d1cf38902). This is not needed but I want to play a bit with RTOS, priorities and want to try RTMES kernel for this
+- Rtems on top of Raspbian followed this tutorial with modifications https://mritunjaysharma394.medium.com/installing-rtems-ecosystem-and-building-your-first-bsp-993d1cf38902). This is not needed but I want to play a bit with RTOS, priorities and want to try RTMES kernel for this
 - Python language
