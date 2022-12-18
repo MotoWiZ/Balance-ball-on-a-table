@@ -24,6 +24,8 @@ Software:
 - Python language
 
 Demo video:
+- Only following white object
+  - https://youtu.be/dzZ0Xr5-1LE
 - With K only for proportional in PID
   - https://youtu.be/numu0MahXes
 - With complete K's of PID (Proportional, Integral and Derivative) NOTE: Add one extra to accelaration
