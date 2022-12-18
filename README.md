@@ -1,7 +1,7 @@
 The aim of this project is to balance a ball on a plane surface (table).
 
 Hardware:
-- 1 unit - Raspberry Pi 4 Model B Rev 1.4
+- 1 unit - Raspberry Pi 4 Model B Rev 1.4 (Overclocked to 2.1 Ghz to get desired FPS)
   - CPU: ARMv7 Processor rev 3 (v7l)
   - Memory: 8 Gb
   - Disk: Sandisk EVO MicroSD 32 Gb Class 10
@@ -22,3 +22,9 @@ Software:
   - kernel ver: 5.15
 - Rtems on top of Raspbian followed this toturial with modifications https://mritunjaysharma394.medium.com/installing-rtems-ecosystem-and-building-your-first-bsp-993d1cf38902). This is not needed but I want to play a bit with RTOS, priorities and want to try RTMES kernel for this
 - Python language
+
+Demo video:
+- With K only for proportional in PID
+  - https://youtu.be/numu0MahXes
+- With complete K's of PID (Proportional, Integral and Derivative) NOTE: Add one extra to accelaration
+  - https://youtu.be/i88yGfhT8k8
